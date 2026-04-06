@@ -7,39 +7,96 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Hide scrollbar for cleaner look */
-        ::-webkit-scrollbar {
-            display: none;
+        :root {
+            --app-bg: #f9fafb;
+            --card-bg: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border-color: #f3f4f6;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --primary-light: #e0e7ff;
+            --primary-dark: #3730a3;
         }
-        body {
-            -ms-overflow-style: none;  
-            scrollbar-width: none;  
+        [data-theme="pink"] {
+            --app-bg: #fdf2f8; 
+            --card-bg: #ffffff; 
+            --primary: #ec4899; 
+            --primary-hover: #db2777; 
+            --primary-light: #fce7f3; 
+            --primary-dark: #9d174d; 
         }
+        [data-theme="mint"] {
+            --app-bg: #ecfdf5; 
+            --card-bg: #ffffff; 
+            --primary: #10b981; 
+            --primary-hover: #059669; 
+            --primary-light: #d1fae5; 
+            --primary-dark: #065f46; 
+        }
+        [data-theme="dark"] {
+            --app-bg: #111827; 
+            --card-bg: #1f2937; 
+            --text-main: #f9fafb; 
+            --text-muted: #9ca3af; 
+            --border-color: #374151; 
+            --primary: #6366f1; 
+            --primary-hover: #818cf8; 
+            --primary-light: #3730a3; 
+            --primary-dark: #e0e7ff; 
+        }
+        
+        ::-webkit-scrollbar { display: none; }
+        body { -ms-overflow-style: none; scrollbar-width: none; background-color: var(--app-bg) !important; color: var(--text-main) !important; transition: background-color 0.3s, color 0.3s; }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
+
+        /* Dynamic Theme Overrides */
+        .bg-gray-50 { background-color: var(--app-bg) !important; }
+        .bg-white { background-color: var(--card-bg) !important; }
+        .text-gray-900, .text-gray-800, .text-gray-700 { color: var(--text-main) !important; }
+        .text-gray-500, .text-gray-400 { color: var(--text-muted) !important; }
+        .border-gray-100, .border-gray-200 { border-color: var(--border-color) !important; }
+        
+        .bg-indigo-600 { background-color: var(--primary) !important; }
+        .hover\:bg-indigo-700:hover { background-color: var(--primary-hover) !important; }
+        .text-indigo-600, .text-indigo-500 { color: var(--primary) !important; }
+        .bg-indigo-100, .bg-indigo-50 { background-color: var(--primary-light) !important; }
+        .text-indigo-800, .text-indigo-700 { color: var(--primary-dark) !important; }
+        .border-indigo-500, .border-indigo-600, .border-indigo-200, .border-indigo-100 { border-color: var(--primary) !important; }
+        .peer-checked\:bg-indigo-50:checked ~ div { background-color: var(--primary-light) !important; }
+        .peer-checked\:border-indigo-600:checked ~ div { border-color: var(--primary) !important; }
+        .peer-checked\:text-indigo-600:checked ~ div { color: var(--primary) !important; }
+        .focus\:border-indigo-500:focus { border-color: var(--primary) !important; }
+        .focus\:ring-indigo-500:focus { --tw-ring-color: var(--primary) !important; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans h-screen flex flex-col overflow-hidden">
 
     <!-- Header -->
-    <header class="bg-white px-6 py-4 shadow-sm z-10 flex justify-between items-center">
+    <header class="bg-white px-6 py-4 shadow-sm z-10 flex justify-between items-center shrink-0">
         <h1 class="text-2xl font-bold text-indigo-600 flex items-center gap-2">
             <i data-lucide="shirt"></i>
             Pocket Closet
         </h1>
+        <div class="flex gap-2">
+            <button onclick="openThemeSettings()" class="text-gray-500 hover:text-indigo-600 p-2 bg-gray-100 rounded-full transition-colors shadow-sm">
+                <i data-lucide="palette" class="w-5 h-5"></i>
+            </button>
+            <button onclick="openStats()" class="text-gray-500 hover:text-indigo-600 p-2 bg-gray-100 rounded-full transition-colors shadow-sm">
+                <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+            </button>
+        </div>
     </header>
 
     <!-- Main Content Area -->
-    <main class="flex-1 overflow-y-auto pb-24 relative">
+    <main class="flex-1 overflow-y-auto pb-28 relative">
         
-        <!-- ==================== CLOSET TAB ==================== -->
+        <!-- ==================== 1. CLOSET TAB ==================== -->
         <div id="tab-closet" class="block w-full h-full p-4">
             
             <!-- Filter Categories -->
-            <div class="flex overflow-x-auto gap-2 pb-4 snap-x">
-                <button id="btn-filter-all" onclick="filterCloset('all')" class="snap-start px-4 py-2 rounded-full bg-indigo-600 text-white text-sm font-medium whitespace-nowrap transition-colors">All</button>
-                <button id="btn-filter-top" onclick="filterCloset('top')" class="snap-start px-4 py-2 rounded-full bg-gray-200 text-gray-700 text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-300">Tops</button>
-                <button id="btn-filter-bottom" onclick="filterCloset('bottom')" class="snap-start px-4 py-2 rounded-full bg-gray-200 text-gray-700 text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-300">Bottoms</button>
-                <button id="btn-filter-shoes" onclick="filterCloset('shoes')" class="snap-start px-4 py-2 rounded-full bg-gray-200 text-gray-700 text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-300">Shoes</button>
-                <button id="btn-filter-jewelry" onclick="filterCloset('jewelry')" class="snap-start px-4 py-2 rounded-full bg-gray-200 text-gray-700 text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-300">Jewelry</button>
+            <div class="flex overflow-x-auto gap-2 pb-4 snap-x" id="closet-filters">
+                <!-- Filters injected by JS -->
             </div>
 
             <!-- Empty State -->
@@ -47,93 +104,141 @@
                 <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-500 mb-4">
                     <i data-lucide="camera" class="w-10 h-10"></i>
                 </div>
-                <h2 class="text-xl font-bold text-gray-800">Your closet is empty!</h2>
-                <p class="text-gray-500 mt-2 max-w-xs">Tap the + button below to start taking pictures of your clothes and jewelry.</p>
+                <h2 class="text-xl font-bold text-gray-800" id="empty-title">Your closet is empty!</h2>
+                <p class="text-gray-500 mt-2 max-w-xs" id="empty-desc">Tap the + button below to start adding clothes.</p>
             </div>
 
             <!-- Clothes Grid -->
-            <div id="clothes-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <!-- Items injected here by JavaScript -->
+            <div id="clothes-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+        </div>
+
+        <!-- ==================== 2. SAVED OUTFITS TAB ==================== -->
+        <div id="tab-saved" class="hidden w-full h-full p-4">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800">
+                <i data-lucide="star" class="text-yellow-500"></i> Favorite Outfits
+            </h2>
+            <div id="saved-empty-state" class="hidden flex-col items-center justify-center h-48 text-center mt-10">
+                <p class="text-gray-500">You haven't saved any outfits yet.<br>Go to the Generator to make some!</p>
+            </div>
+            <div id="saved-outfits-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+        </div>
+
+        <!-- ==================== 3. PLANNER TAB ==================== -->
+        <div id="tab-planner" class="hidden w-full h-full p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold flex items-center gap-2 text-gray-800">
+                    <i data-lucide="calendar" class="text-indigo-500"></i> Weekly Planner
+                </h2>
+                <button onclick="openSuitcase()" class="text-sm bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full font-bold flex items-center gap-2 hover:bg-indigo-200 transition-colors">
+                    <i data-lucide="briefcase" class="w-4 h-4"></i> Pack
+                </button>
+            </div>
+            <div class="bg-blue-50 text-blue-700 text-sm p-3 rounded-xl mb-4">
+                Tap a day to assign one of your <strong>Saved Outfits</strong> to it!
+            </div>
+            <div id="planner-list" class="flex flex-col gap-3">
+                <!-- Planner days injected by JS -->
             </div>
         </div>
 
-        <!-- ==================== OUTFITS TAB ==================== -->
+        <!-- ==================== 4. OUTFITS GENERATOR TAB ==================== -->
         <div id="tab-outfits" class="hidden w-full h-full p-4 flex flex-col items-center">
             
-            <button onclick="generateOutfit()" class="w-full max-w-md bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2 mb-6">
-                <i data-lucide="sparkles"></i>
-                Generate New Outfit
-            </button>
+            <!-- Style Challenge -->
+            <div class="w-full max-w-md bg-indigo-50 border border-indigo-100 p-4 rounded-2xl mb-4 flex items-center justify-between shadow-sm cursor-pointer hover:bg-indigo-100 transition-colors" onclick="getDailyChallenge()">
+                <div class="flex flex-col">
+                    <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider mb-1 flex items-center gap-1"><i data-lucide="dice-5" class="w-3 h-3"></i> Style Challenge</span>
+                    <span id="challenge-text" class="text-sm font-bold text-indigo-800">Tap for a random style challenge!</span>
+                </div>
+                <i data-lucide="refresh-cw" class="w-5 h-5 text-indigo-400"></i>
+            </div>
 
-            <div id="generator-error" class="hidden bg-red-100 text-red-700 p-4 rounded-xl mb-6 text-sm text-center max-w-md">
-                You need at least one top and one bottom in your closet to generate an outfit!
+            <!-- Weather / Occasion Filters -->
+            <div class="w-full max-w-md bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-4 grid grid-cols-3 gap-2 sm:gap-3">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Weather</label>
+                    <select id="gen-weather" class="w-full bg-gray-50 border border-gray-200 text-xs sm:text-sm rounded-lg p-2 outline-none focus:border-indigo-500">
+                        <option value="any">Any</option>
+                        <option value="hot">☀️ Hot</option>
+                        <option value="cold">❄️ Cold</option>
+                        <option value="mild">⛅️ Mild</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Occasion</label>
+                    <select id="gen-occasion" class="w-full bg-gray-50 border border-gray-200 text-xs sm:text-sm rounded-lg p-2 outline-none focus:border-indigo-500">
+                        <option value="any">Any</option>
+                        <option value="casual">🛋️ Casual</option>
+                        <option value="school">🎒 School</option>
+                        <option value="fancy">✨ Fancy</option>
+                        <option value="active">🏃‍♀️ Active</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Color</label>
+                    <select id="gen-color" class="w-full bg-gray-50 border border-gray-200 text-xs sm:text-sm rounded-lg p-2 outline-none focus:border-indigo-500">
+                        <option value="any">Any Color</option>
+                        <option value="red">🔴 Red</option>
+                        <option value="blue">🔵 Blue</option>
+                        <option value="green">🟢 Green</option>
+                        <option value="black">⚫️ Black</option>
+                        <option value="white">⚪️ White</option>
+                        <option value="pink">🌸 Pink</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex w-full max-w-md gap-2 mb-6">
+                <button onclick="generateOutfit()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
+                    <i data-lucide="sparkles"></i> Shuffle Unlocked
+                </button>
+                <button onclick="saveCurrentOutfit()" class="bg-gray-800 hover:bg-gray-900 text-white font-bold px-4 rounded-2xl shadow-lg transition-transform active:scale-95 flex flex-col items-center justify-center">
+                    <i data-lucide="star" class="w-5 h-5"></i>
+                    <span class="text-[10px] uppercase tracking-wider mt-1">Save</span>
+                </button>
             </div>
 
             <!-- Outfit Display Grid -->
-            <div class="w-full max-w-md bg-white p-6 rounded-3xl shadow-sm border border-gray-100 grid grid-cols-2 gap-4">
-                
-                <!-- Top -->
-                <div class="col-span-2 flex flex-col items-center">
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Top</span>
-                    <div class="w-full aspect-square bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden">
-                        <i id="outfit-top-icon" data-lucide="shirt" class="w-12 h-12 text-gray-300"></i>
-                        <img id="outfit-top" src="" class="hidden w-full h-full object-cover">
-                    </div>
-                </div>
-
-                <!-- Bottom -->
-                <div class="col-span-1 flex flex-col items-center">
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Bottom</span>
-                    <div class="w-full aspect-square bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden">
-                        <i id="outfit-bottom-icon" data-lucide="scissors" class="w-8 h-8 text-gray-300"></i>
-                        <img id="outfit-bottom" src="" class="hidden w-full h-full object-cover">
-                    </div>
-                </div>
-
-                <!-- Shoes -->
-                <div class="col-span-1 flex flex-col items-center">
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Shoes</span>
-                    <div class="w-full aspect-square bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden">
-                        <i id="outfit-shoes-icon" data-lucide="footprints" class="w-8 h-8 text-gray-300"></i>
-                        <img id="outfit-shoes" src="" class="hidden w-full h-full object-cover">
-                    </div>
-                </div>
-
-                <!-- Jewelry -->
-                <div class="col-span-2 flex flex-col items-center mt-2">
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Jewelry / Accessory</span>
-                    <div class="w-24 aspect-square bg-gray-50 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden">
-                        <i id="outfit-jewelry-icon" data-lucide="gem" class="w-8 h-8 text-gray-300"></i>
-                        <img id="outfit-jewelry" src="" class="hidden w-full h-full object-cover">
-                    </div>
-                </div>
-
+            <div id="generator-grid" class="w-full max-w-md bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-gray-100 grid grid-cols-2 gap-3 sm:gap-4 relative">
+                <!-- Slots injected by JS -->
             </div>
         </div>
     </main>
 
     <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 px-6 py-3 pb-safe flex justify-around items-center z-20">
-        <button onclick="switchTab('closet')" id="nav-closet" class="flex flex-col items-center text-indigo-600 transition-colors p-2">
+    <nav class="fixed bottom-0 w-full bg-white border-t border-gray-200 px-2 py-2 pb-safe flex justify-between items-center z-20">
+        <button onclick="switchTab('closet')" id="nav-closet" class="flex flex-col items-center text-indigo-600 transition-colors p-2 flex-1">
             <i data-lucide="layout-grid" class="w-6 h-6 mb-1"></i>
-            <span class="text-xs font-medium">Closet</span>
+            <span class="text-[10px] font-medium uppercase tracking-wider">Closet</span>
+        </button>
+        <button onclick="switchTab('saved')" id="nav-saved" class="flex flex-col items-center text-gray-400 transition-colors p-2 flex-1">
+            <i data-lucide="heart" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-medium uppercase tracking-wider">Saved</span>
         </button>
         
         <!-- Floating Add Button -->
-        <button onclick="openModal()" class="relative -top-6 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition-transform active:scale-95 border-4 border-gray-50">
-            <i data-lucide="plus" class="w-8 h-8"></i>
-        </button>
+        <div class="flex-1 flex justify-center">
+            <button onclick="openModal()" class="relative -top-5 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition-transform active:scale-95 border-4 border-gray-50 flex items-center justify-center shrink-0">
+                <i data-lucide="plus" class="w-7 h-7"></i>
+            </button>
+        </div>
 
-        <button onclick="switchTab('outfits')" id="nav-outfits" class="flex flex-col items-center text-gray-400 hover:text-indigo-600 transition-colors p-2">
+        <button onclick="switchTab('planner')" id="nav-planner" class="flex flex-col items-center text-gray-400 transition-colors p-2 flex-1">
+            <i data-lucide="calendar" class="w-6 h-6 mb-1"></i>
+            <span class="text-[10px] font-medium uppercase tracking-wider">Plan</span>
+        </button>
+        <button onclick="switchTab('outfits')" id="nav-outfits" class="flex flex-col items-center text-gray-400 transition-colors p-2 flex-1">
             <i data-lucide="sparkles" class="w-6 h-6 mb-1"></i>
-            <span class="text-xs font-medium">Outfits</span>
+            <span class="text-[10px] font-medium uppercase tracking-wider">Generate</span>
         </button>
     </nav>
 
+    <!-- ==================== MODALS ==================== -->
+
     <!-- Add Item Modal -->
     <div id="add-modal" class="fixed inset-0 bg-black/60 z-50 hidden items-end sm:items-center justify-center">
-        <div id="add-modal-content" class="bg-white w-full sm:w-96 rounded-t-3xl sm:rounded-3xl p-6 transform translate-y-full transition-transform duration-300 ease-out">
-            <div class="flex justify-between items-center mb-6">
+        <div id="add-modal-content" class="bg-white w-full sm:w-[28rem] rounded-t-3xl sm:rounded-3xl p-6 transform translate-y-full transition-transform duration-300 ease-out max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6 sticky top-0 bg-white z-10 pb-2">
                 <h3 class="text-xl font-bold">Add to Closet</h3>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-gray-800 bg-gray-100 p-2 rounded-full">
                     <i data-lucide="x" class="w-5 h-5"></i>
@@ -144,7 +249,7 @@
             <div class="relative w-full aspect-square bg-gray-100 rounded-2xl mb-6 flex flex-col items-center justify-center overflow-hidden border-2 border-dashed border-gray-300">
                 <div id="upload-placeholder" class="text-center p-4">
                     <i data-lucide="camera" class="w-12 h-12 text-gray-400 mx-auto mb-2"></i>
-                    <p class="text-sm text-gray-500">Tap to take a picture or upload</p>
+                    <p class="text-sm text-gray-500 font-medium">Tap to take a picture</p>
                 </div>
                 <img id="preview-image" src="" class="hidden absolute inset-0 w-full h-full object-cover">
                 <input type="file" id="imageInput" accept="image/*" capture="environment" onchange="handleImageSelect(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
@@ -152,143 +257,499 @@
 
             <!-- Category Selection -->
             <div class="mb-6">
-                <label class="block text-sm font-bold text-gray-700 mb-3">Category</label>
-                <div class="grid grid-cols-2 gap-3">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Category (Pick 1)</label>
+                <div class="grid grid-cols-3 gap-2" id="category-inputs">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+
+            <!-- Weather Tags -->
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Weather (Optional)</label>
+                <div class="flex gap-2 flex-wrap">
                     <label class="cursor-pointer">
-                        <input type="radio" name="category" value="top" class="peer sr-only" checked>
-                        <div class="rounded-xl border border-gray-200 px-4 py-3 text-center hover:bg-gray-50 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-600 font-medium transition-all">Top</div>
+                        <input type="checkbox" name="weather-tag" value="hot" class="peer sr-only">
+                        <div class="rounded-full border border-gray-200 px-3 py-1.5 text-sm hover:bg-gray-50 peer-checked:bg-orange-100 peer-checked:border-orange-500 peer-checked:text-orange-700 transition-all">☀️ Hot</div>
                     </label>
                     <label class="cursor-pointer">
-                        <input type="radio" name="category" value="bottom" class="peer sr-only">
-                        <div class="rounded-xl border border-gray-200 px-4 py-3 text-center hover:bg-gray-50 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-600 font-medium transition-all">Bottom</div>
+                        <input type="checkbox" name="weather-tag" value="cold" class="peer sr-only">
+                        <div class="rounded-full border border-gray-200 px-3 py-1.5 text-sm hover:bg-gray-50 peer-checked:bg-blue-100 peer-checked:border-blue-500 peer-checked:text-blue-700 transition-all">❄️ Cold</div>
                     </label>
                     <label class="cursor-pointer">
-                        <input type="radio" name="category" value="shoes" class="peer sr-only">
-                        <div class="rounded-xl border border-gray-200 px-4 py-3 text-center hover:bg-gray-50 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-600 font-medium transition-all">Shoes</div>
-                    </label>
-                    <label class="cursor-pointer">
-                        <input type="radio" name="category" value="jewelry" class="peer sr-only">
-                        <div class="rounded-xl border border-gray-200 px-4 py-3 text-center hover:bg-gray-50 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-600 font-medium transition-all">Jewelry</div>
+                        <input type="checkbox" name="weather-tag" value="mild" class="peer sr-only">
+                        <div class="rounded-full border border-gray-200 px-3 py-1.5 text-sm hover:bg-gray-50 peer-checked:bg-green-100 peer-checked:border-green-500 peer-checked:text-green-700 transition-all">⛅️ Mild</div>
                     </label>
                 </div>
             </div>
 
-            <button id="btn-save" onclick="saveItem()" disabled class="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700 transition-colors">
-                Save Item
+            <!-- Occasion Tags -->
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Occasion (Optional)</label>
+                <div class="flex gap-2 flex-wrap">
+                    <label class="cursor-pointer">
+                        <input type="checkbox" name="occasion-tag" value="casual" class="peer sr-only">
+                        <div class="rounded-full border border-gray-200 px-3 py-1.5 text-sm hover:bg-gray-50 peer-checked:bg-purple-100 peer-checked:border-purple-500 peer-checked:text-purple-700 transition-all">🛋️ Casual</div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="checkbox" name="occasion-tag" value="school" class="peer sr-only">
+                        <div class="rounded-full border border-gray-200 px-3 py-1.5 text-sm hover:bg-gray-50 peer-checked:bg-yellow-100 peer-checked:border-yellow-500 peer-checked:text-yellow-700 transition-all">🎒 School</div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="checkbox" name="occasion-tag" value="fancy" class="peer sr-only">
+                        <div class="rounded-full border border-gray-200 px-3 py-1.5 text-sm hover:bg-gray-50 peer-checked:bg-pink-100 peer-checked:border-pink-500 peer-checked:text-pink-700 transition-all">✨ Fancy</div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="checkbox" name="occasion-tag" value="active" class="peer sr-only">
+                        <div class="rounded-full border border-gray-200 px-3 py-1.5 text-sm hover:bg-gray-50 peer-checked:bg-red-100 peer-checked:border-red-500 peer-checked:text-red-700 transition-all">🏃‍♀️ Active</div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Color Tags -->
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Primary Color (Optional)</label>
+                <div class="flex gap-2 flex-wrap" id="color-inputs">
+                    <!-- Injected by JS -->
+                </div>
+            </div>
+
+            <!-- Wishlist Toggle -->
+            <div class="mb-6 bg-pink-50 p-3 rounded-xl border border-pink-100 flex items-center justify-between">
+                <div>
+                    <label class="block text-sm font-bold text-pink-800">Dream Closet Item?</label>
+                    <p class="text-xs text-pink-600">I don't own this yet, it's on my wishlist!</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" id="wishlist-toggle" class="sr-only peer">
+                    <div class="w-11 h-6 bg-pink-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink-500"></div>
+                </label>
+            </div>
+
+            <button id="btn-save" onclick="saveItem()" disabled class="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-700 transition-colors shadow-md mt-2">
+                Save to Closet
             </button>
         </div>
     </div>
 
+    <!-- Pick Outfit for Planner Modal -->
+    <div id="plan-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex-col items-center justify-end sm:justify-center">
+        <div class="bg-white w-full sm:w-[32rem] rounded-t-3xl sm:rounded-3xl p-6 h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold" id="plan-modal-title">Pick Outfit</h3>
+                <button onclick="closePlanModal()" class="bg-gray-100 p-2 rounded-full">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="overflow-y-auto flex-1 pb-10" id="plan-modal-grid">
+                <!-- Selectable saved outfits go here -->
+            </div>
+            <button onclick="clearPlannerDay()" class="mt-4 w-full py-3 text-red-600 font-bold bg-red-50 rounded-xl hover:bg-red-100">
+                Clear Outfit for this Day
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div id="stats-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex-col items-center justify-center">
+        <div class="bg-white w-[90%] sm:w-96 rounded-3xl p-6 relative shadow-2xl">
+            <button onclick="closeStats()" class="absolute top-4 right-4 bg-gray-100 p-2 rounded-full text-gray-500 hover:text-gray-800 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="bar-chart-2" class="text-indigo-500"></i> Closet Stats
+            </h3>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-indigo-50 p-4 rounded-2xl text-center shadow-inner">
+                    <span class="block text-4xl font-black text-indigo-600" id="stat-total">0</span>
+                    <span class="text-[10px] text-indigo-800 font-bold uppercase tracking-wide mt-1 block">Total Items</span>
+                </div>
+                <div class="bg-pink-50 p-4 rounded-2xl text-center shadow-inner">
+                    <span class="block text-4xl font-black text-pink-600" id="stat-outfits">0</span>
+                    <span class="text-[10px] text-pink-800 font-bold uppercase tracking-wide mt-1 block">Saved Outfits</span>
+                </div>
+            </div>
+            <div class="bg-gray-50 border border-gray-100 p-4 rounded-2xl">
+                <p class="text-[10px] text-gray-500 font-bold mb-3 uppercase tracking-wide">Most Worn Item</p>
+                <div id="stat-most-worn" class="flex items-center gap-3">
+                    <!-- Injected -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suitcase Modal -->
+    <div id="suitcase-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex-col items-center justify-end sm:justify-center">
+        <div class="bg-white w-full sm:w-[32rem] rounded-t-3xl sm:rounded-3xl p-6 h-[85vh] flex flex-col shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold flex items-center gap-2">
+                    <i data-lucide="briefcase" class="text-indigo-500"></i> Packing List
+                </h3>
+                <button onclick="closeSuitcase()" class="bg-gray-100 p-2 rounded-full hover:bg-gray-200 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <p class="text-sm text-gray-500 mb-4 font-medium">Here is everything you need for the outfits planned this week!</p>
+            <div class="overflow-y-auto flex-1 bg-gray-50 rounded-2xl p-4 border border-gray-100 flex flex-col gap-3" id="suitcase-list">
+                <!-- Injected checklist -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Settings Modal -->
+    <div id="theme-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex-col items-center justify-center">
+        <div class="bg-white w-[90%] sm:w-96 rounded-3xl p-6 relative shadow-2xl">
+            <button onclick="closeThemeSettings()" class="absolute top-4 right-4 bg-gray-100 p-2 rounded-full text-gray-500 hover:text-gray-800 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                <i data-lucide="palette" class="text-indigo-500"></i> App Theme
+            </h3>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="setTheme('default')" class="p-4 rounded-2xl border-2 border-indigo-200 bg-indigo-50 text-indigo-700 font-bold hover:bg-indigo-100 transition-colors">Default</button>
+                <button onclick="setTheme('pink')" class="p-4 rounded-2xl border-2 border-pink-200 bg-pink-50 text-pink-700 font-bold hover:bg-pink-100 transition-colors">Bubblegum</button>
+                <button onclick="setTheme('mint')" class="p-4 rounded-2xl border-2 border-green-200 bg-green-50 text-green-700 font-bold hover:bg-green-100 transition-colors">Mint</button>
+                <button onclick="setTheme('dark')" class="p-4 rounded-2xl border-2 border-gray-600 bg-gray-800 text-white font-bold hover:bg-gray-700 transition-colors">Dark Mode</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed top-6 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-xl z-50 transition-all duration-300 opacity-0 pointer-events-none translate-y-[-20px] font-medium text-sm flex items-center gap-2">
+        <i data-lucide="check-circle" class="w-4 h-4 text-green-400"></i>
+        <span id="toast-msg">Success!</span>
+    </div>
+
     <!-- Scripts -->
     <script>
-        // Initialize Icons
-        lucide.createIcons();
+        // Data Configuration
+        const CATEGORIES = [
+            { id: 'top', label: 'Top', icon: 'shirt', colSpan: 1 },
+            { id: 'bottom', label: 'Bottom', icon: 'scissors', colSpan: 1 },
+            { id: 'dress', label: 'Dress', icon: 'user', colSpan: 2 },
+            { id: 'jacket', label: 'Jacket', icon: 'cloud', colSpan: 2 },
+            { id: 'shoes', label: 'Shoes', icon: 'footprints', colSpan: 1 },
+            { id: 'bag', label: 'Bag', icon: 'briefcase', colSpan: 1 },
+            { id: 'hat', label: 'Hat', icon: 'sun', colSpan: 1 },
+            { id: 'jewelry', label: 'Jewelry', icon: 'gem', colSpan: 1 }
+        ];
 
-        // State Variables
+        const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        const COLOR_TAGS = [
+            { id: 'red', color: 'bg-red-500' },
+            { id: 'blue', color: 'bg-blue-500' },
+            { id: 'green', color: 'bg-green-500' },
+            { id: 'black', color: 'bg-gray-900' },
+            { id: 'white', color: 'bg-white border border-gray-300' },
+            { id: 'pink', color: 'bg-pink-400' }
+        ];
+
+        // State
         let closet = [];
+        let savedOutfits = [];
+        let planner = { Monday: null, Tuesday: null, Wednesday: null, Thursday: null, Friday: null, Saturday: null, Sunday: null };
+        
         let currentFilter = 'all';
         let pendingImageData = null;
+        let currentTheme = 'default';
+        
+        const CHALLENGES = [
+            "Wear your favorite color from head to toe!",
+            "Mix and match two different patterns!",
+            "Build an outfit around your favorite pair of shoes!",
+            "Pick a piece of jewelry first, then match the outfit to it!",
+            "Wear something you haven't worn in over a month!",
+            "Create a completely monochromatic (one color) outfit!",
+            "Dress up super fancy for absolutely no reason!"
+        ];
+        
+        // Generator State
+        let currentOutfit = {}; 
+        let lockedSlots = {}; 
+        CATEGORIES.forEach(c => {
+            currentOutfit[c.id] = null;
+            lockedSlots[c.id] = false;
+        });
 
-        // Load data from LocalStorage
-        function loadData() {
-            const saved = localStorage.getItem('pocket_closet_data');
-            if (saved) {
-                closet = JSON.parse(saved);
+        let activePlannerDay = null;
+
+        // Initialization
+        window.onload = () => {
+            setupUI();
+            loadData();
+            lucide.createIcons();
+        };
+
+        function setupUI() {
+            // Build Closet Filters
+            const filterContainer = document.getElementById('closet-filters');
+            filterContainer.innerHTML = `<button id="btn-filter-all" onclick="filterCloset('all')" class="snap-start px-4 py-2 rounded-full bg-indigo-600 text-white text-sm font-medium whitespace-nowrap">All</button>` +
+                `<button id="btn-filter-wishlist" onclick="filterCloset('wishlist')" class="snap-start px-4 py-2 rounded-full bg-pink-100 text-pink-700 text-sm font-medium whitespace-nowrap flex items-center gap-1 hover:bg-pink-200 transition-colors"><i data-lucide="shopping-bag" class="w-4 h-4"></i> Wishlist</button>` +
+                `<button id="btn-filter-laundry" onclick="filterCloset('laundry')" class="snap-start px-4 py-2 rounded-full bg-blue-100 text-blue-700 text-sm font-medium whitespace-nowrap flex items-center gap-1 hover:bg-blue-200 transition-colors"><i data-lucide="droplets" class="w-4 h-4"></i> In Wash</button>` +
+                `<button id="btn-filter-donated" onclick="filterCloset('donated')" class="snap-start px-4 py-2 rounded-full bg-orange-100 text-orange-700 text-sm font-medium whitespace-nowrap flex items-center gap-1 hover:bg-orange-200 transition-colors"><i data-lucide="package" class="w-4 h-4"></i> Donation Bin</button>` +
+                CATEGORIES.map(c => `<button id="btn-filter-${c.id}" onclick="filterCloset('${c.id}')" class="snap-start px-4 py-2 rounded-full bg-gray-200 text-gray-700 text-sm font-medium whitespace-nowrap">${c.label}</button>`).join('');
+
+            // Build Add Modal Categories
+            const catInputs = document.getElementById('category-inputs');
+            catInputs.innerHTML = CATEGORIES.map((c, index) => `
+                <label class="cursor-pointer">
+                    <input type="radio" name="category" value="${c.id}" class="peer sr-only" ${index === 0 ? 'checked' : ''}>
+                    <div class="rounded-xl border border-gray-200 py-2 text-center text-sm hover:bg-gray-50 peer-checked:bg-indigo-50 peer-checked:border-indigo-600 peer-checked:text-indigo-600 font-medium transition-all flex flex-col items-center justify-center gap-1">
+                        <i data-lucide="${c.icon}" class="w-5 h-5"></i>
+                        ${c.label}
+                    </div>
+                </label>
+            `).join('');
+
+            // Build Color Picker
+            const colorInputs = document.getElementById('color-inputs');
+            if (colorInputs) {
+                colorInputs.innerHTML = COLOR_TAGS.map(c => `
+                    <label class="cursor-pointer">
+                        <input type="radio" name="color-tag" value="${c.id}" class="peer sr-only">
+                        <div class="rounded-full w-8 h-8 ${c.color} ring-2 ring-offset-2 ring-transparent peer-checked:ring-indigo-500 transition-all shadow-sm"></div>
+                    </label>
+                `).join('');
             }
+
+            // Build Generator Grid
+            const genGrid = document.getElementById('generator-grid');
+            genGrid.innerHTML = CATEGORIES.map(c => `
+                <div class="${c.colSpan === 2 ? 'col-span-2' : 'col-span-1'} flex flex-col items-center relative">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">${c.label}</span>
+                    <div class="w-full aspect-square bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden relative group">
+                        
+                        <button onclick="toggleLock('${c.id}')" id="lock-btn-${c.id}" class="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 shadow-sm z-10 text-gray-400 hover:text-gray-800 transition-colors hidden">
+                            <i data-lucide="unlock" id="lock-icon-${c.id}" class="w-4 h-4"></i>
+                        </button>
+
+                        <button onclick="clearSlot('${c.id}')" id="clear-btn-${c.id}" class="absolute top-2 left-2 p-1.5 rounded-full bg-white/80 shadow-sm z-10 text-red-400 hover:text-red-600 transition-colors hidden">
+                            <i data-lucide="trash" class="w-4 h-4"></i>
+                        </button>
+
+                        <i id="outfit-${c.id}-placeholder" data-lucide="${c.icon}" class="w-8 h-8 text-gray-300"></i>
+                        <img id="outfit-${c.id}-img" src="" class="hidden w-full h-full object-cover">
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Data Management
+        function loadData() {
+            try {
+                const storedCloset = localStorage.getItem('pc_closet');
+                if (storedCloset) closet = JSON.parse(storedCloset);
+                
+                const storedSaved = localStorage.getItem('pc_saved');
+                if (storedSaved) savedOutfits = JSON.parse(storedSaved);
+
+                const storedPlanner = localStorage.getItem('pc_planner');
+                if (storedPlanner) planner = JSON.parse(storedPlanner);
+
+                const storedTheme = localStorage.getItem('pc_theme');
+                if (storedTheme) {
+                    currentTheme = storedTheme;
+                    document.documentElement.setAttribute('data-theme', currentTheme);
+                }
+            } catch(e) { console.error("Error loading data"); }
+
+            renderCloset();
+            renderSaved();
+            renderPlanner();
+            generateOutfit(); // prepopulate generator
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('pc_closet', JSON.stringify(closet));
+                localStorage.setItem('pc_saved', JSON.stringify(savedOutfits));
+                localStorage.setItem('pc_planner', JSON.stringify(planner));
+            } catch (e) {
+                showToast("Storage full! Please delete some items.");
+            }
+        }
+
+        // UI Helpers
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = msg;
+            toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-[-20px]');
+                toast.classList.remove('opacity-100', 'translate-y-0');
+            }, 3000);
+        }
+
+        function switchTab(tabId) {
+            ['closet', 'saved', 'planner', 'outfits'].forEach(id => {
+                document.getElementById(`tab-${id}`).classList.add('hidden');
+                const nav = document.getElementById(`nav-${id}`);
+                nav.classList.remove('text-indigo-600');
+                nav.classList.add('text-gray-400');
+            });
+            
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`nav-${tabId}`).classList.remove('text-gray-400');
+            document.getElementById(`nav-${tabId}`).classList.add('text-indigo-600');
+        }
+
+        // --- CLOSET TAB ---
+        function filterCloset(cat) {
+            currentFilter = cat;
+            document.getElementById('btn-filter-all').className = `snap-start px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${cat === 'all' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`;
+            document.getElementById('btn-filter-wishlist').className = `snap-start px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1 transition-colors ${cat === 'wishlist' ? 'bg-pink-600 text-white' : 'bg-pink-100 text-pink-700'}`;
+            document.getElementById('btn-filter-laundry').className = `snap-start px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1 transition-colors ${cat === 'laundry' ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-700'}`;
+            document.getElementById('btn-filter-donated').className = `snap-start px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap flex items-center gap-1 transition-colors ${cat === 'donated' ? 'bg-orange-600 text-white' : 'bg-orange-100 text-orange-700'}`;
+            CATEGORIES.forEach(c => {
+                document.getElementById(`btn-filter-${c.id}`).className = `snap-start px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${cat === c.id ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`;
+            });
             renderCloset();
         }
 
-        // Save data to LocalStorage
-        function saveData() {
-            try {
-                localStorage.setItem('pocket_closet_data', JSON.stringify(closet));
-            } catch (e) {
-                alert("Storage full! You might need to delete some old items before adding new ones.");
-            }
-        }
-
-        // Switch between Tabs
-        function switchTab(tabId) {
-            // Update UI
-            document.getElementById('tab-closet').classList.add('hidden');
-            document.getElementById('tab-outfits').classList.add('hidden');
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-
-            // Update Nav colors
-            document.getElementById('nav-closet').classList.remove('text-indigo-600');
-            document.getElementById('nav-closet').classList.add('text-gray-400');
-            document.getElementById('nav-outfits').classList.remove('text-indigo-600');
-            document.getElementById('nav-outfits').classList.add('text-gray-400');
+        function renderCloset() {
+            const grid = document.getElementById('clothes-grid');
+            const emptyState = document.getElementById('empty-state');
             
-            document.getElementById(`nav-${tabId}`).classList.remove('text-gray-400');
-            document.getElementById(`nav-${tabId}`).classList.add('text-indigo-600');
+            let filtered = closet;
+            if (currentFilter === 'laundry') {
+                filtered = closet.filter(i => i.isDirty && !i.isDonated);
+            } else if (currentFilter === 'wishlist') {
+                filtered = closet.filter(i => i.isWishlist && !i.isDonated);
+            } else if (currentFilter === 'donated') {
+                filtered = closet.filter(i => i.isDonated);
+            } else if (currentFilter !== 'all') {
+                filtered = closet.filter(i => i.category === currentFilter && !i.isDonated);
+            } else {
+                // 'all' shows everything except donated
+                filtered = closet.filter(i => !i.isDonated);
+            }
 
-            if (tabId === 'outfits') {
-                generateOutfit();
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+            } else {
+                emptyState.classList.add('hidden');
+                emptyState.classList.remove('flex');
+                grid.innerHTML = filtered.map(item => `
+                    <div class="relative rounded-xl overflow-hidden shadow-sm border border-gray-100 aspect-square bg-white group ${(item.isDirty || item.isDonated) ? 'grayscale opacity-75' : ''}">
+                        <img src="${item.image}" class="w-full h-full object-cover">
+                        
+                        ${item.isDirty && !item.isDonated ? `<div class="absolute inset-0 flex items-center justify-center bg-black/40 font-black text-white tracking-widest pointer-events-none shadow-inner z-0">WASHING</div>` : ''}
+                        ${item.isDonated ? `<div class="absolute inset-0 flex items-center justify-center bg-orange-900/60 font-black text-white tracking-widest pointer-events-none shadow-inner z-0">DONATED</div>` : ''}
+
+                        <div class="absolute top-2 right-2 flex flex-col gap-2 opacity-0 md:opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                            <button onclick="deleteItem('${item.id}')" class="bg-red-500/90 text-white p-2 rounded-full flex items-center justify-center backdrop-blur-sm shadow-md hover:bg-red-600 transition-colors" title="Delete">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="toggleLaundry('${item.id}')" class="bg-blue-500/90 text-white p-2 rounded-full flex items-center justify-center backdrop-blur-sm shadow-md hover:bg-blue-600 transition-colors" title="Toggle Laundry">
+                                <i data-lucide="droplets" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="toggleDonated('${item.id}')" class="bg-orange-500/90 text-white p-2 rounded-full flex items-center justify-center backdrop-blur-sm shadow-md hover:bg-orange-600 transition-colors" title="Move to Donation Bin">
+                                <i data-lucide="package" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 pt-6 pointer-events-none flex gap-1 flex-wrap">
+                            ${item.isWishlist ? `<span class="bg-pink-500/80 text-white text-[9px] px-1.5 py-0.5 rounded backdrop-blur-md uppercase font-bold flex items-center gap-1"><i data-lucide="shopping-bag" class="w-2 h-2"></i> Wishlist</span>` : ''}
+                            ${item.color ? `<span class="bg-white/20 text-white text-[9px] px-1.5 py-0.5 rounded backdrop-blur-md uppercase font-medium">${item.color}</span>` : ''}
+                            ${(item.weather||[]).map(w => `<span class="bg-white/20 text-white text-[9px] px-1.5 py-0.5 rounded backdrop-blur-md uppercase font-medium">${w}</span>`).join('')}
+                            ${(item.occasion||[]).map(o => `<span class="bg-black/40 text-white text-[9px] px-1.5 py-0.5 rounded backdrop-blur-md uppercase font-medium">${o}</span>`).join('')}
+                        </div>
+                    </div>
+                `).join('');
+                lucide.createIcons();
             }
         }
 
-        // Modal Functions
+        function toggleDonated(id) {
+            const item = closet.find(i => i.id === id);
+            if(item) {
+                item.isDonated = !item.isDonated;
+                if (item.isDonated) {
+                    item.isDirty = false; // logic: clean before donating
+                }
+                saveData();
+                renderCloset();
+                showToast(item.isDonated ? "Moved to Donation Bin! 📦" : "Restored to Closet!");
+            }
+        }
+
+        function toggleLaundry(id) {
+            const item = closet.find(i => i.id === id);
+            if(item) {
+                item.isDirty = !item.isDirty;
+                saveData();
+                renderCloset();
+                showToast(item.isDirty ? "Moved to Laundry Basket! 🧺" : "Marked as Clean! ✨");
+            }
+        }
+
+        function deleteItem(id) {
+            closet = closet.filter(i => i.id !== id);
+            // Also remove from saved outfits if they contained this item
+            savedOutfits.forEach(outfit => {
+                Object.keys(outfit.items).forEach(cat => {
+                    if (outfit.items[cat] && outfit.items[cat].id === id) {
+                        outfit.items[cat] = null;
+                    }
+                });
+            });
+            saveData();
+            renderCloset();
+            renderSaved();
+            showToast("Item deleted");
+        }
+
+        // --- ADD ITEM MODAL ---
         function openModal() {
-            resetModal();
+            pendingImageData = null;
+            document.getElementById('imageInput').value = '';
+            document.getElementById('preview-image').classList.add('hidden');
+            document.getElementById('upload-placeholder').classList.remove('hidden');
+            document.getElementById('btn-save').disabled = true;
+            
+            // Uncheck tags
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.querySelectorAll('input[name="color-tag"]').forEach(cb => cb.checked = false);
+            document.getElementById('wishlist-toggle').checked = false;
+            
             const modal = document.getElementById('add-modal');
             const content = document.getElementById('add-modal-content');
-            
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            
-            // Small delay to allow display:flex to apply before animating transform
-            setTimeout(() => {
-                content.classList.remove('translate-y-full');
-            }, 10);
+            setTimeout(() => content.classList.remove('translate-y-full'), 10);
         }
 
         function closeModal() {
             const modal = document.getElementById('add-modal');
             const content = document.getElementById('add-modal-content');
             content.classList.add('translate-y-full');
-            
             setTimeout(() => {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
-            }, 300); // match transition duration
+            }, 300);
         }
 
-        function resetModal() {
-            document.getElementById('imageInput').value = '';
-            document.getElementById('preview-image').src = '';
-            document.getElementById('preview-image').classList.add('hidden');
-            document.getElementById('upload-placeholder').classList.remove('hidden');
-            document.querySelector('input[name="category"][value="top"]').checked = true;
-            document.getElementById('btn-save').disabled = true;
-            pendingImageData = null;
-        }
-
-        // Handles uploading/taking a picture and previewing it
         function handleImageSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Compress the image so local storage doesn't fill up instantly
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 500;
-                    const scaleSize = MAX_WIDTH / img.width;
-                    canvas.width = MAX_WIDTH;
-                    canvas.height = img.height * scaleSize;
-
+                    const MAX = 400; // Smaller size to save storage
+                    const scale = MAX / img.width;
+                    canvas.width = MAX;
+                    canvas.height = img.height * scale;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                    // Convert to slightly compressed JPEG
-                    pendingImageData = canvas.toDataURL('image/jpeg', 0.7);
-
-                    const preview = document.getElementById('preview-image');
-                    preview.src = pendingImageData;
-                    preview.classList.remove('hidden');
+                    
+                    pendingImageData = canvas.toDataURL('image/jpeg', 0.6);
+                    document.getElementById('preview-image').src = pendingImageData;
+                    document.getElementById('preview-image').classList.remove('hidden');
                     document.getElementById('upload-placeholder').classList.add('hidden');
                     document.getElementById('btn-save').disabled = false;
                 };
@@ -297,131 +758,520 @@
             reader.readAsDataURL(file);
         }
 
-        // Saves the new clothing item to your closet
         function saveItem() {
             if (!pendingImageData) return;
             const category = document.querySelector('input[name="category"]:checked').value;
-            const newItem = {
+            
+            const weatherTags = Array.from(document.querySelectorAll('input[name="weather-tag"]:checked')).map(cb => cb.value);
+            const occasionTags = Array.from(document.querySelectorAll('input[name="occasion-tag"]:checked')).map(cb => cb.value);
+            const colorTag = document.querySelector('input[name="color-tag"]:checked')?.value || null;
+            const isWishlist = document.getElementById('wishlist-toggle').checked;
+
+            closet.unshift({
                 id: Date.now().toString(),
                 image: pendingImageData,
-                category: category
-            };
-            closet.push(newItem);
+                category: category,
+                weather: weatherTags,
+                occasion: occasionTags,
+                color: colorTag,
+                isDirty: false,
+                isWishlist: isWishlist,
+                isDonated: false
+            });
+            
             saveData();
             renderCloset();
             closeModal();
+            showToast("Added to closet!");
         }
 
-        // Draws the clothes onto the screen
-        function renderCloset() {
-            const grid = document.getElementById('clothes-grid');
-            const emptyState = document.getElementById('empty-state');
+        // --- OUTFIT GENERATOR ---
+        function toggleLock(cat) {
+            lockedSlots[cat] = !lockedSlots[cat];
+            updateSlotUI(cat);
+        }
 
-            const filtered = currentFilter === 'all' ? closet : closet.filter(i => i.category === currentFilter);
+        function clearSlot(cat) {
+            currentOutfit[cat] = null;
+            lockedSlots[cat] = false;
+            updateSlotUI(cat);
+        }
 
-            if (filtered.length === 0) {
-                grid.innerHTML = '';
-                emptyState.classList.remove('hidden');
-                emptyState.classList.add('flex');
-                if (closet.length > 0) {
-                    emptyState.querySelector('h2').textContent = `No ${currentFilter} found!`;
-                    emptyState.querySelector('p').textContent = "Tap + to add some.";
+        function updateSlotUI(cat) {
+            const img = document.getElementById(`outfit-${cat}-img`);
+            const placeholder = document.getElementById(`outfit-${cat}-placeholder`);
+            const lockBtn = document.getElementById(`lock-btn-${cat}`);
+            const lockIcon = document.getElementById(`lock-icon-${cat}`);
+            const clearBtn = document.getElementById(`clear-btn-${cat}`);
+
+            if (currentOutfit[cat]) {
+                img.src = currentOutfit[cat].image;
+                img.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+                lockBtn.classList.remove('hidden');
+                clearBtn.classList.remove('hidden');
+
+                if (lockedSlots[cat]) {
+                    lockBtn.classList.add('bg-red-50', 'text-red-500');
+                    lockBtn.classList.remove('bg-white/80', 'text-gray-400');
+                    lockIcon.setAttribute('data-lucide', 'lock');
                 } else {
-                    emptyState.querySelector('h2').textContent = "Your closet is empty!";
-                    emptyState.querySelector('p').textContent = "Tap the + button below to start taking pictures of your clothes and jewelry.";
+                    lockBtn.classList.remove('bg-red-50', 'text-red-500');
+                    lockBtn.classList.add('bg-white/80', 'text-gray-400');
+                    lockIcon.setAttribute('data-lucide', 'unlock');
                 }
             } else {
-                emptyState.classList.add('hidden');
-                emptyState.classList.remove('flex');
-                grid.innerHTML = filtered.map(item => `
-                    <div class="relative group rounded-xl overflow-hidden shadow-sm border border-gray-100 aspect-square bg-white">
-                        <img src="${item.image}" class="w-full h-full object-cover">
-                        <!-- Custom Delete Button -->
-                        <button onclick="deleteItem('${item.id}')" class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10 shadow-sm flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
-                        </button>
-                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-2 pt-6 pointer-events-none">
-                            <span class="text-white text-xs font-medium capitalize">${item.category}</span>
-                        </div>
-                    </div>
-                `).join('');
+                img.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                lockBtn.classList.add('hidden');
+                clearBtn.classList.add('hidden');
+                lockedSlots[cat] = false; // can't lock empty
             }
+            lucide.createIcons();
         }
 
-        // Removes an item
-        function deleteItem(id) {
-            // Replaced window.confirm with a simple custom prompt logic using a basic alert fallback, 
-            // but in web we can just use confirm. Since instructions say no alert() or confirm(), 
-            // we will just delete it immediately for seamless mobile experience.
-            closet = closet.filter(i => i.id !== id);
-            saveData();
-            renderCloset();
-            generateOutfit(); // Refresh outfit in case we deleted something currently worn
-        }
+        function generateOutfit() {
+            const reqWeather = document.getElementById('gen-weather').value;
+            const reqOccasion = document.getElementById('gen-occasion').value;
+            const reqColor = document.getElementById('gen-color') ? document.getElementById('gen-color').value : 'any';
 
-        // Filters by Tops, Bottoms, etc.
-        function filterCloset(cat) {
-            currentFilter = cat;
-            
-            // Update filter button colors
-            ['all', 'top', 'bottom', 'shoes', 'jewelry'].forEach(c => {
-                const btn = document.getElementById(`btn-filter-${c}`);
-                if (c === cat) {
-                    btn.className = "snap-start px-4 py-2 rounded-full bg-indigo-600 text-white text-sm font-medium whitespace-nowrap transition-colors";
+            CATEGORIES.forEach(c => {
+                if (lockedSlots[c.id]) return; // Skip locked
+
+                // Exclude items in the wash and donated
+                let pool = closet.filter(i => i.category === c.id && !i.isDirty && !i.isDonated);
+
+                // Apply Filters
+                if (reqWeather !== 'any') {
+                    pool = pool.filter(i => !i.weather || i.weather.length === 0 || i.weather.includes(reqWeather));
+                }
+                if (reqOccasion !== 'any') {
+                    pool = pool.filter(i => !i.occasion || i.occasion.length === 0 || i.occasion.includes(reqOccasion));
+                }
+                if (reqColor !== 'any') {
+                    pool = pool.filter(i => i.color === reqColor);
+                }
+
+                if (pool.length > 0) {
+                    currentOutfit[c.id] = pool[Math.floor(Math.random() * pool.length)];
                 } else {
-                    btn.className = "snap-start px-4 py-2 rounded-full bg-gray-200 text-gray-700 text-sm font-medium whitespace-nowrap transition-colors hover:bg-gray-300";
+                    currentOutfit[c.id] = null;
                 }
             });
-            renderCloset();
+
+            // Logic: If dress is picked and unlocked, clear top/bottom to look nice.
+            if (currentOutfit.dress && !lockedSlots.dress) {
+                if (!lockedSlots.top) currentOutfit.top = null;
+                if (!lockedSlots.bottom) currentOutfit.bottom = null;
+            } else if ((currentOutfit.top || currentOutfit.bottom) && (!lockedSlots.top || !lockedSlots.bottom)) {
+                if (!lockedSlots.dress) currentOutfit.dress = null;
+            }
+
+            CATEGORIES.forEach(c => updateSlotUI(c.id));
         }
 
-        // Picks random items to make an outfit
-        function generateOutfit() {
-            const tops = closet.filter(i => i.category === 'top');
-            const bottoms = closet.filter(i => i.category === 'bottom');
-            const shoes = closet.filter(i => i.category === 'shoes');
-            const jewelry = closet.filter(i => i.category === 'jewelry');
-
-            const errorMsg = document.getElementById('generator-error');
-
-            // Make sure we have at least one top and one bottom to work with
-            if (tops.length === 0 || bottoms.length === 0) {
-                errorMsg.classList.remove('hidden');
-                ['top', 'bottom', 'shoes', 'jewelry'].forEach(cat => updateOutfitSlot(cat, null));
+        // --- SAVED OUTFITS ---
+        function saveCurrentOutfit() {
+            // Check if outfit is basically empty
+            const hasItems = Object.values(currentOutfit).some(item => item !== null);
+            if (!hasItems) {
+                showToast("Cannot save empty outfit!");
                 return;
             }
 
-            errorMsg.classList.add('hidden');
-
-            // Pick randomly from available items
-            const randomTop = tops[Math.floor(Math.random() * tops.length)];
-            const randomBottom = bottoms[Math.floor(Math.random() * bottoms.length)];
-            const randomShoes = shoes.length > 0 ? shoes[Math.floor(Math.random() * shoes.length)] : null;
-            const randomJewelry = jewelry.length > 0 ? jewelry[Math.floor(Math.random() * jewelry.length)] : null;
-
-            updateOutfitSlot('top', randomTop);
-            updateOutfitSlot('bottom', randomBottom);
-            updateOutfitSlot('shoes', randomShoes);
-            updateOutfitSlot('jewelry', randomJewelry);
+            const newOutfit = {
+                id: 'outfit_' + Date.now(),
+                items: { ...currentOutfit },
+                rating: 0,
+                note: ""
+            };
+            savedOutfits.unshift(newOutfit);
+            saveData();
+            renderSaved();
+            showToast("Outfit saved to Favorites!");
         }
 
-        // Helper function to show/hide images in the outfit generator
-        function updateOutfitSlot(category, item) {
-            const imgEl = document.getElementById(`outfit-${category}`);
-            const iconEl = document.getElementById(`outfit-${category}-icon`);
-
-            if (item) {
-                imgEl.src = item.image;
-                imgEl.classList.remove('hidden');
-                iconEl.classList.add('hidden');
+        function renderSaved() {
+            const grid = document.getElementById('saved-outfits-grid');
+            const empty = document.getElementById('saved-empty-state');
+            
+            if (savedOutfits.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.remove('hidden');
+                empty.classList.add('flex');
             } else {
-                imgEl.classList.add('hidden');
-                iconEl.classList.remove('hidden');
+                empty.classList.add('hidden');
+                empty.classList.remove('flex');
+                
+                grid.innerHTML = savedOutfits.map(outfit => {
+                    // Create mini grid inside
+                    const validItems = Object.values(outfit.items).filter(i => i !== null);
+                    let innerGrid = validItems.slice(0, 4).map(i => `
+                        <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
+                            <img src="${i.image}" class="w-full h-full object-cover">
+                            ${i.isWishlist ? `<div class="absolute bottom-1 right-1 bg-pink-500 p-1 rounded-full shadow-sm"><i data-lucide="shopping-bag" class="w-3 h-3 text-white"></i></div>` : ''}
+                        </div>
+                    `).join('');
+                    
+                    // Star Rating HTML
+                    let starsHtml = '';
+                    for(let i=1; i<=5; i++) {
+                        const isFilled = i <= (outfit.rating || 0);
+                        starsHtml += `<i data-lucide="star" onclick="rateOutfit('${outfit.id}', ${i})" class="w-5 h-5 cursor-pointer hover:scale-110 transition-transform ${isFilled ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}"></i>`;
+                    }
+
+                    return `
+                        <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm relative group flex flex-col gap-3">
+                            <div class="absolute -top-3 -right-3 flex gap-1 z-10 hidden group-hover:flex">
+                                <button onclick="downloadOutfit('${outfit.id}')" class="bg-indigo-500 text-white p-2 rounded-full shadow-lg hover:bg-indigo-600 transition-transform active:scale-95">
+                                    <i data-lucide="download" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="deleteSavedOutfit('${outfit.id}')" class="bg-red-500 text-white p-2 rounded-full shadow-lg hover:bg-red-600 transition-transform active:scale-95">
+                                    <i data-lucide="x" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-2">
+                                ${innerGrid}
+                            </div>
+                            
+                            <div class="flex justify-center gap-1 bg-gray-50 rounded-xl p-2 border border-gray-100">
+                                ${starsHtml}
+                            </div>
+
+                            <textarea 
+                                placeholder="Add a diary note... (e.g. Wore this to the dance!)" 
+                                onchange="updateOutfitNote('${outfit.id}', this.value)"
+                                class="w-full text-xs text-gray-700 bg-gray-50 border border-gray-200 rounded-lg p-2 resize-none focus:outline-none focus:border-indigo-400 h-16"
+                            >${outfit.note || ''}</textarea>
+
+                            <button onclick="loadSavedIntoGenerator('${outfit.id}')" class="w-full py-2 bg-gray-50 hover:bg-gray-100 text-indigo-600 text-sm font-bold rounded-xl transition-colors mt-auto border border-gray-200">
+                                Wear This
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+                lucide.createIcons();
             }
         }
 
-        // Start the app when the page loads
-        window.onload = loadData;
+        function rateOutfit(id, rating) {
+            const outfit = savedOutfits.find(o => o.id === id);
+            if(outfit) {
+                outfit.rating = rating;
+                saveData();
+                renderSaved();
+            }
+        }
+
+        function updateOutfitNote(id, note) {
+            const outfit = savedOutfits.find(o => o.id === id);
+            if(outfit) {
+                outfit.note = note;
+                saveData();
+            }
+        }
+
+        function downloadOutfit(id) {
+            const outfit = savedOutfits.find(o => o.id === id);
+            if (!outfit) return;
+
+            const items = Object.values(outfit.items).filter(i => i !== null);
+            if (items.length === 0) return;
+
+            // Show toast so the user knows it's loading
+            showToast("Generating picture...");
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 600;
+            canvas.height = 700; // Extra height for the title
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw title text
+            ctx.fillStyle = '#4f46e5';
+            ctx.font = 'bold 36px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('My Pocket Closet Outfit', 300, 60);
+
+            // Grid Math for drawing the clothes
+            const size = 250;
+            const padding = 20;
+            const startX = (600 - (size * 2 + padding)) / 2;
+            const startY = 100;
+
+            const positions = [
+                {x: startX, y: startY}, 
+                {x: startX + size + padding, y: startY},
+                {x: startX, y: startY + size + padding}, 
+                {x: startX + size + padding, y: startY + size + padding}
+            ];
+
+            let loaded = 0;
+            const maxDraw = Math.min(items.length, 4);
+
+            items.slice(0, 4).forEach((item, index) => {
+                const img = new Image();
+                img.onload = () => {
+                    ctx.drawImage(img, positions[index].x, positions[index].y, size, size);
+                    ctx.strokeStyle = '#e2e8f0';
+                    ctx.lineWidth = 4;
+                    ctx.strokeRect(positions[index].x, positions[index].y, size, size);
+
+                    loaded++;
+                    if (loaded === maxDraw) {
+                        // All images drawn, trigger the actual file download
+                        const link = document.createElement('a');
+                        link.download = `my-outfit-${Date.now()}.png`;
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                        setTimeout(() => showToast('Picture saved! Share it with your friends! 📲'), 500);
+                    }
+                };
+                img.src = item.image;
+            });
+        }
+
+        function deleteSavedOutfit(id) {
+            savedOutfits = savedOutfits.filter(o => o.id !== id);
+            // Remove from planner if assigned
+            DAYS.forEach(day => {
+                if (planner[day] === id) planner[day] = null;
+            });
+            saveData();
+            renderSaved();
+            renderPlanner();
+        }
+
+        function loadSavedIntoGenerator(id) {
+            const target = savedOutfits.find(o => o.id === id);
+            if (target) {
+                currentOutfit = { ...target.items };
+                // reset locks
+                CATEGORIES.forEach(c => lockedSlots[c.id] = false);
+                CATEGORIES.forEach(c => updateSlotUI(c.id));
+                switchTab('outfits');
+            }
+        }
+
+        // --- PLANNER ---
+        function renderPlanner() {
+            const list = document.getElementById('planner-list');
+            list.innerHTML = DAYS.map(day => {
+                const assignedId = planner[day];
+                const outfit = assignedId ? savedOutfits.find(o => o.id === assignedId) : null;
+                
+                let contentHTML = `<span class="text-gray-400 text-sm italic">Tap to plan...</span>`;
+                if (outfit) {
+                    const validImages = Object.values(outfit.items).filter(i => i !== null).map(i => i.image).slice(0, 3);
+                    contentHTML = `
+                        <div class="flex gap-1">
+                            ${validImages.map(img => `<img src="${img}" class="w-8 h-8 rounded-md object-cover border border-gray-200">`).join('')}
+                        </div>
+                        <span class="text-xs text-indigo-600 font-bold ml-2">Assigned</span>
+                    `;
+                }
+
+                return `
+                    <div onclick="openPlanModal('${day}')" class="bg-white border border-gray-100 p-4 rounded-2xl flex items-center justify-between shadow-sm cursor-pointer hover:border-indigo-300 transition-colors">
+                        <span class="font-bold w-24">${day}</span>
+                        <div class="flex-1 flex items-center justify-end">
+                            ${contentHTML}
+                        </div>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-300 ml-2"></i>
+                    </div>
+                `;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function openPlanModal(day) {
+            activePlannerDay = day;
+            document.getElementById('plan-modal-title').textContent = `Plan for ${day}`;
+            
+            const grid = document.getElementById('plan-modal-grid');
+            if (savedOutfits.length === 0) {
+                grid.innerHTML = `<div class="text-center text-gray-500 mt-10">You need to save an outfit first!</div>`;
+            } else {
+                grid.innerHTML = `<div class="grid grid-cols-2 gap-3">` + savedOutfits.map(outfit => {
+                    const validItems = Object.values(outfit.items).filter(i => i !== null);
+                    let innerGrid = validItems.slice(0, 4).map(i => `
+                        <div class="aspect-square bg-gray-100 rounded-sm overflow-hidden">
+                            <img src="${i.image}" class="w-full h-full object-cover">
+                        </div>
+                    `).join('');
+                    
+                    const isSelected = planner[day] === outfit.id;
+                    const borderClass = isSelected ? 'border-4 border-indigo-500' : 'border border-gray-200';
+
+                    return `
+                        <div onclick="assignPlannerOutfit('${outfit.id}')" class="bg-white p-2 rounded-xl ${borderClass} shadow-sm cursor-pointer hover:border-indigo-300 transition-all">
+                            <div class="grid grid-cols-2 gap-1">
+                                ${innerGrid}
+                            </div>
+                        </div>
+                    `;
+                }).join('') + `</div>`;
+            }
+
+            document.getElementById('plan-modal').classList.remove('hidden');
+            document.getElementById('plan-modal').classList.add('flex');
+        }
+
+        function closePlanModal() {
+            document.getElementById('plan-modal').classList.add('hidden');
+            document.getElementById('plan-modal').classList.remove('flex');
+        }
+
+        function assignPlannerOutfit(outfitId) {
+            planner[activePlannerDay] = outfitId;
+            saveData();
+            renderPlanner();
+            closePlanModal();
+        }
+
+        function clearPlannerDay() {
+            planner[activePlannerDay] = null;
+            saveData();
+            renderPlanner();
+            closePlanModal();
+        }
+
+        // --- NEW: STATS & SUITCASE ---
+
+        function openStats() {
+            document.getElementById('stat-total').textContent = closet.length;
+            document.getElementById('stat-outfits').textContent = savedOutfits.length;
+
+            // Calculate Most Worn Item
+            const usage = {};
+            closet.forEach(i => usage[i.id] = 0);
+            
+            savedOutfits.forEach(outfit => {
+                Object.values(outfit.items).forEach(item => {
+                    if (item && usage[item.id] !== undefined) {
+                        usage[item.id]++;
+                    }
+                });
+            });
+
+            let mostWornId = null;
+            let maxUses = -1;
+            for (const [id, count] of Object.entries(usage)) {
+                if (count > maxUses && count > 0) {
+                    maxUses = count;
+                    mostWornId = id;
+                }
+            }
+
+            const mostWornContainer = document.getElementById('stat-most-worn');
+            if (mostWornId) {
+                const item = closet.find(i => i.id === mostWornId);
+                mostWornContainer.innerHTML = `
+                    <img src="${item.image}" class="w-16 h-16 rounded-xl object-cover border-2 border-white shadow-sm">
+                    <div>
+                        <p class="font-bold text-gray-800 capitalize">${item.category}</p>
+                        <p class="text-xs text-gray-500">Used in ${maxUses} saved outfits</p>
+                    </div>
+                `;
+            } else {
+                mostWornContainer.innerHTML = `<p class="text-sm text-gray-400">Save some outfits to see stats!</p>`;
+            }
+
+            const modal = document.getElementById('stats-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeStats() {
+            const modal = document.getElementById('stats-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openSuitcase() {
+            const suitcaseList = document.getElementById('suitcase-list');
+            
+            // Gather all distinct items from the planner
+            const itemsToPack = new Map();
+            
+            DAYS.forEach(day => {
+                const outfitId = planner[day];
+                if (outfitId) {
+                    const outfit = savedOutfits.find(o => o.id === outfitId);
+                    if (outfit) {
+                        Object.values(outfit.items).forEach(item => {
+                            if (item && !itemsToPack.has(item.id)) {
+                                itemsToPack.set(item.id, item);
+                            }
+                        });
+                    }
+                }
+            });
+
+            const uniqueItems = Array.from(itemsToPack.values());
+
+            if (uniqueItems.length === 0) {
+                suitcaseList.innerHTML = `
+                    <div class="text-center py-10 text-gray-500">
+                        <i data-lucide="briefcase" class="w-12 h-12 mx-auto mb-2 opacity-30 text-indigo-500"></i>
+                        <p class="font-bold">Your planner is empty!</p>
+                        <p class="text-xs mt-1">Assign outfits to days on the planner to generate a packing list.</p>
+                    </div>
+                `;
+            } else {
+                suitcaseList.innerHTML = uniqueItems.map((item) => `
+                    <label class="flex items-center gap-4 bg-white p-3 rounded-xl border border-gray-100 shadow-sm cursor-pointer hover:border-indigo-300 transition-colors">
+                        <input type="checkbox" class="w-6 h-6 text-indigo-600 rounded-lg border-gray-300 focus:ring-indigo-500 cursor-pointer">
+                        <img src="${item.image}" class="w-14 h-14 rounded-lg object-cover border border-gray-100">
+                        <span class="font-bold text-gray-700 capitalize flex-1 text-lg">${item.category}</span>
+                    </label>
+                `).join('');
+            }
+            
+            lucide.createIcons();
+            const modal = document.getElementById('suitcase-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeSuitcase() {
+            const modal = document.getElementById('suitcase-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // --- NEW: THEMES & CHALLENGES ---
+
+        function openThemeSettings() {
+            const modal = document.getElementById('theme-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeThemeSettings() {
+            const modal = document.getElementById('theme-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function setTheme(themeName) {
+            currentTheme = themeName;
+            document.documentElement.setAttribute('data-theme', themeName);
+            localStorage.setItem('pc_theme', themeName);
+            closeThemeSettings();
+            showToast("Theme updated! 🎨");
+        }
+
+        function getDailyChallenge() {
+            const textEl = document.getElementById('challenge-text');
+            const random = CHALLENGES[Math.floor(Math.random() * CHALLENGES.length)];
+            textEl.textContent = random;
+        }
+
     </script>
 </body>
 </html>
